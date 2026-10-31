@@ -931,7 +931,7 @@ function walkable(p){
   for(var j=0;j<PL.halls.length;j++){ var h=PL.halls[j]; if(inRect(p,h,8) && !hallBlocked(h)) return true; }
   return false;
 }
-function roomAt(p){ for(var i=0;i<PL.rects.length;i++) if(inRect(p,PL.rects[i],0)) return PL.rects[i].room; return null; }
+function roomAt(p,m){ for(var i=0;i<PL.rects.length;i++) if(inRect(p,PL.rects[i],m||0)) return PL.rects[i].room; return null; }
 function randIn(r,pad){ return {x:r.gx*CELL+(Math.random()*2-1)*(HALF-pad), y:r.gy*CELL+(Math.random()*2-1)*(HALF-pad)}; }
 
 function plBuildFloor(){
@@ -1103,8 +1103,8 @@ function plAutoEquip(it){
 }
 
 function plRooms(dt){
-  var r=roomAt(PL.body);
-  if(r&&!r.visited){
+  var r=roomAt(PL.body), inner=roomAt(PL.body,34);
+  if(inner&&!inner.visited){ r=inner;
     r.visited=true;
     if(r.kind==='wave'&&r.wavesLeft>0){ r.sealed=true; plSpawnGroup(r); r.wavesLeft--; plBanner('Doors sealed!',1.5); plLog('wave room: '+r.waves+' waves'); }
     if(r.kind==='boss'){ var a=K.companion.trigger(T.companion,PL.companion,'bossRoom'); if(a&&a.fired) plCompanionAct(a); }
@@ -1131,6 +1131,7 @@ function plFrame(dt){
   if(PL.held>0){ PL.held-=dt; act=false; }
   PL.body.speedMult=K.status.speedMult(T.status,PL.fighter);
   var steer=K.status.steerInput(PL.fighter,stick.x,stick.y);
+  if(!walkable(PL.body)){ var home=roomAt(PL.body)||PL.floor.rooms[PL.floor.path[0]]; var hx=home.gx*CELL-PL.body.x, hy=home.gy*CELL-PL.body.y, hl=Math.hypot(hx,hy)||1; PL.body.x+=hx/hl*Math.min(hl,120*dt); PL.body.y+=hy/hl*Math.min(hl,120*dt); }
   var ox=PL.body.x, oy=PL.body.y;
   var press=PL.press; PL.press=null;
   K.actions.tick(T.actions,PL.body,steer,press,dt,act).forEach(function(ev){ if(ev.type==='active') plSwing(ev.kind,ev.step); });
