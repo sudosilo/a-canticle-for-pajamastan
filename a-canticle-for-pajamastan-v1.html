@@ -1154,6 +1154,8 @@ function plFrame(dt){
     if(ev.type==='phase') plBanner('The boss changes!',1.4);
     if(ev.type==='death'&&e) plKilled(e);
   });
+  PL.brainW.enemies.concat(PL.beastW.enemies).forEach(function(e){ var rm=PL.floor.rooms[e.room]; if(!rm) return; var cx=rm.gx*CELL, cy=rm.gy*CELL, lim=HALF-14; e.x=Math.max(cx-lim,Math.min(cx+lim,e.x)); e.y=Math.max(cy-lim,Math.min(cy+lim,e.y)); });
+  PL.beastW.shots=PL.beastW.shots.filter(function(sh){ return walkable(sh); });
   K.traps.tick(T.traps,PL.traps,[PL.players[0]],dt,PL.tier).forEach(function(ev){
     if(ev.type==='fire'){ ev.hits.forEach(function(h){ if(h.damage) plHurtPlayer(Math.round(h.damage*0.4*depthMult()),PL.body.x,PL.body.y,false); if(h.status){ var r=K.status.apply(T.status,PL.fighter,h.status,0,{chance:h.chance}); if(r.applied) plLog(h.status+'!'); } if(h.hold){ PL.held=h.hold; plLog('snared!'); } }); var tr=PL.traps.filter(function(x){return x.id===ev.trap;})[0]; if(tr) PL.fx.push({x:tr.x,y:tr.y,t:0.5,ring:T.traps.kinds[tr.kind].radius||30,col:'#d1495b'}); }
     if(ev.type==='warn') plLog('click...');
