@@ -21,7 +21,10 @@
   "flinchThreshold": 0.08,
   "dyingTime": 1.1,
   "mourningTime": 1.6,
-  "rageBuffPower": 1.35,
-  "rageBuffSpeed": 1.25,
+  "mournGuardDownAt": 0.5,
+  "mournPowerDownAt": 0.8,
+  "mournCursePercent": 20,
+  "rageBuffPower": 1.0,
+  "rageBuffSpeed": 1.0,
   "attackRange": 26
 }

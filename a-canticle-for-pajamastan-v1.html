@@ -26,7 +26,7 @@ header h1 span{color:var(--blue)}
 main{max-width:860px;margin:0 auto;padding:14px 16px 40px}
 section{display:none}
 section.on{display:block}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;overflow-x:auto}
 .card h3{margin:0 0 8px;font-size:15px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0}
 label.f{display:flex;flex-direction:column;font-size:12px;color:var(--soft);gap:3px}
@@ -61,7 +61,7 @@ th{color:var(--soft);font-weight:600}
 <div id="scrim"></div>
 <nav id="menu">
   <h2>Engine</h2>
-  <details open><summary>Systems</summary><div class="opts" id="navlist"></div></details>
+  <div id="navgroups"></div>
   <details><summary>Tuning files</summary><div class="opts">
     <p class="note">Every slider edits the values in memory. Copy a system's values and paste them into its tuning file in the repo.</p>
     <div id="copylist"></div>
@@ -91,7 +91,7 @@ th{color:var(--soft);font-weight:600}
 
   <section id="s-brain">
     <div class="card"><h3>Pack brain sandbox</h3>
-      <p class="note">Drag the blue player around. The pack leader has the wide ring. Tap Strike leader to kill it and watch the pack mourn, then rage.</p>
+      <p class="note">Drag the blue player around. The pack leader has the wide ring. Tap Strike leader to kill it and watch the pack mourn, then curse you with guard down and power down.</p>
       <canvas id="bCan" height="420"></canvas>
       <div class="row">
         <button class="b" id="bReset">Reset pack</button>
@@ -160,6 +160,113 @@ th{color:var(--soft);font-weight:600}
       <div id="nOut" class="mono"></div>
     </div>
   </section>
+
+  <section id="s-spells">
+    <div class="card"><h3>Spell range</h3>
+      <p class="note">Tap the field to aim. Green dots are allies for support spells. Dummies show health and status, and statuses tick down live.</p>
+      <div class="row">
+        <label class="f">Spell<select id="spName"></select></label>
+        <label class="f">Level<input id="spLv" type="number" value="10" min="1" max="30"></label>
+        <label class="f">Caster mind<input id="spMind" type="number" value="300"></label>
+        <label class="f">Gear boost<input id="spBoost" type="number" value="1" step="0.05"></label>
+      </div>
+      <canvas id="spCan"></canvas>
+      <div class="row"><button class="b" id="spCast">Cast</button><button class="b ghost" id="spReset">Reset dummies</button><button class="b ghost" id="spPoison">Poison all</button></div>
+      <div id="spInfo" class="note"></div>
+      <div class="mono list" id="spLog"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Spell tuning values</summary><div id="t-spells"></div></details></div>
+    <div class="card"><details class="tune"><summary>Status tuning values</summary><div id="t-status"></div></details></div>
+  </section>
+
+  <section id="s-comeback">
+    <div class="card"><h3>Comeback chain</h3>
+      <p class="note">Set each player's level, meter and move. Player one starts the chain, others join or donate inside the window, then fire.</p>
+      <div id="cbPlayers"></div>
+      <div class="row"><button class="b" id="cbStart">Start chain</button><button class="b ghost" id="cbFire">Fire now</button><button class="b ghost" id="cbFill">Fill all meters</button></div>
+      <div id="cbState" class="note"></div>
+      <div id="cbOut"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Comeback tuning values</summary><div id="t-comeback"></div></details></div>
+  </section>
+
+  <section id="s-bestiary">
+    <div class="card"><h3>Bestiary sandbox</h3>
+      <p class="note">Drag the blue player. Swing hits the nearest enemy, Sweep is a low attack that misses flyers in the air, Blast hits everything nearby and finds invisible phantoms.</p>
+      <div class="row"><label class="f">Spawn<select id="beSet"><option value="mix">everything</option><option value="flyer">flyers</option><option value="gunner">gunners</option><option value="phantom">phantom and decoys</option><option value="splitter">splitter</option><option value="nest">nest</option><option value="boss">boss</option></select></label></div>
+      <canvas id="beCan"></canvas>
+      <div class="row"><button class="b" id="beSwing">Swing</button><button class="b ghost" id="beSweep">Sweep</button><button class="b ghost" id="beBlast">Blast</button><button class="b ghost" id="bePart">Hit boss part</button><button class="b ghost" id="beReset">Reset</button></div>
+      <div class="mono list" id="beLog"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Bestiary tuning values</summary><div id="t-bestiary"></div></details></div>
+  </section>
+
+  <section id="s-traps">
+    <div class="card"><h3>Trap yard</h3>
+      <p class="note">Drag the blue player through the yard. Traps notice you, warn, then fire. The saw and fence keep going.</p>
+      <div class="row"><label class="f">Difficulty<select id="trTier"></select></label><label class="f">Player health<input id="trHp" type="text" readonly value="1000"></label></div>
+      <canvas id="trCan"></canvas>
+      <div class="row"><button class="b" id="trReset">Reset yard</button><button class="b ghost" id="trFence">Toggle fence</button></div>
+      <div class="mono list" id="trLog"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Trap tuning values</summary><div id="t-traps"></div></details></div>
+  </section>
+
+  <section id="s-script">
+    <div class="card"><h3>Quest script runner</h3>
+      <p class="note">Edit the quest, tap Run, then fire world events at it. The runner shows every game instruction the script asks for.</p>
+      <textarea id="qsText" class="mono" rows="16" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:8px"></textarea>
+      <div class="row"><button class="b" id="qsRun">Run</button><button class="b ghost" data-ev="enemyDied">Enemy died</button><button class="b ghost" data-ev="enterFloor">Enter floor</button><button class="b ghost" data-ev="talkElder">Talk to elder</button><button class="b ghost" data-ev="playerDied">Player died</button></div>
+      <div id="qsChoice" class="row"></div>
+      <div id="qsState" class="note"></div>
+      <div class="mono list" id="qsLog"></div>
+    </div>
+  </section>
+
+  <section id="s-economy">
+    <div class="card"><h3>Town shops</h3>
+      <div class="row"><label class="f">Player level<input id="ecLv" type="number" value="25" min="1" max="100"></label><label class="f">Wallet<input id="ecCoin" type="number" value="5000"></label><label class="f">Refining grit<input id="ecGrit" type="number" value="3"></label></div>
+      <div class="row"><button class="b" id="ecRoll">Restock shops</button></div>
+      <div class="mono list" id="ecShop"></div>
+    </div>
+    <div class="card"><h3>Refine and appraise</h3>
+      <p class="note">Rolls an unidentified weapon with a special, appraises it, then refines it to its cap.</p>
+      <div class="row"><button class="b" id="ecFind">Find unidentified weapon</button><button class="b ghost" id="ecAppraise">Appraise</button><button class="b ghost" id="ecRefine">Refine</button></div>
+      <div class="mono" id="ecItem"></div>
+    </div>
+    <div class="card"><h3>Trade handshake</h3>
+      <div class="row"><button class="b" id="tdNew">New trade</button><button class="b ghost" id="tdStep">Next step</button><button class="b ghost" id="tdChange">Change offer</button><button class="b ghost" id="tdWalk">Walk away</button></div>
+      <div class="mono list" id="tdLog"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Economy tuning values</summary><div id="t-economy"></div></details></div>
+  </section>
+
+  <section id="s-companion">
+    <div class="card"><h3>Companion nursery</h3>
+      <div class="row"><label class="f">Player archetype<select id="coArch"><option>fighter</option><option>shooter</option><option>caster</option></select></label><label class="f">Cooldown<select id="coCool"><option value="skip">skip for testing</option><option value="real">real cooldown</option></select></label><button class="b ghost" id="coNew">New companion</button></div>
+      <div class="row" id="coFeed"></div>
+      <div id="coView"></div>
+      <div class="row"><button class="b ghost" data-tr="bossRoom">Boss room</button><button class="b ghost" data-tr="lowHealth">Low health</button><button class="b ghost" data-tr="death">Player died</button><button class="b ghost" data-tr="meterFull">Meter full</button></div>
+      <div class="mono list" id="coLog"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Companion tuning values</summary><div id="t-companion"></div></details></div>
+  </section>
+
+  <section id="s-modes">
+    <div class="card"><h3>Difficulty tiers</h3>
+      <p class="note">A sample enemy with one hundred health at each tier.</p>
+      <div id="moTiers"></div>
+    </div>
+    <div class="card"><h3>Challenge run</h3>
+      <div class="row"><label class="f">Stage<select id="moStage"></select></label><label class="f">Clear time seconds<input id="moTime" type="number" value="400"></label><label class="f">Deaths<input id="moDeaths" type="number" value="1"></label><button class="b" id="moRun">Run stage</button></div>
+      <div class="mono" id="moChal"></div>
+    </div>
+    <div class="card"><h3>Battle match</h3>
+      <div class="row"><label class="f">Rules<select id="moPreset"></select></label><button class="b" id="moBattle">Simulate match</button></div>
+      <div id="moBat"></div>
+    </div>
+    <div class="card"><details class="tune"><summary>Modes tuning values</summary><div id="t-modes"></div></details></div>
+  </section>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -170,17 +277,35 @@ th{color:var(--soft);font-weight:600}
 <script src="engine/a-canticle-for-pajamastan-v1-growth.js"></script>
 <script src="engine/a-canticle-for-pajamastan-v1-floor.js"></script>
 <script src="engine/a-canticle-for-pajamastan-v1-netsync.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-status.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-spells.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-comeback.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-bestiary.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-traps.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-script.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-economy.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-companion.js"></script>
+<script src="engine/a-canticle-for-pajamastan-v1-modes.js"></script>
 <script>
 (function(){
 var K = window.Canticle;
 var SYS = [
-  {id:'combat', name:'Combat'},
-  {id:'brain', name:'Enemy brain'},
-  {id:'loot', name:'Loot'},
-  {id:'growth', name:'Growth'},
-  {id:'floor', name:'Floor'},
-  {id:'net', name:'Network sync'}
+  {id:'combat', name:'Combat', group:'Fighting'},
+  {id:'spells', name:'Spells and status', group:'Fighting'},
+  {id:'comeback', name:'Comeback chain', group:'Fighting'},
+  {id:'brain', name:'Pack brain', group:'Enemies'},
+  {id:'bestiary', name:'Bestiary', group:'Enemies'},
+  {id:'floor', name:'Floor', group:'World'},
+  {id:'traps', name:'Traps', group:'World'},
+  {id:'script', name:'Quest script', group:'World'},
+  {id:'modes', name:'Difficulty and modes', group:'World'},
+  {id:'loot', name:'Loot', group:'Gear and growth'},
+  {id:'economy', name:'Shops and trading', group:'Gear and growth'},
+  {id:'growth', name:'Growth', group:'Gear and growth'},
+  {id:'companion', name:'Companion', group:'Gear and growth'},
+  {id:'net', name:'Network sync', group:'Network'}
 ];
+var TUNING = ['combat','brain','loot','growth','floor','spells','status','comeback','bestiary','traps','economy','companion','modes'];
 var T = {};
 var $ = function(id){ return document.getElementById(id); };
 
@@ -199,12 +324,16 @@ function show(id){
   if(id==='growth') drawGrowth();
   if(id==='floor') buildFloor();
   if(id==='brain') sizeBrain();
+  if(window.__canticleShow) window.__canticleShow(id);
 }
+var groupBoxes={};
 SYS.forEach(function(s){
-  var b=document.createElement('button'); b.className='nav'; b.id='nav-'+s.id; b.textContent=s.name; b.onclick=function(){show(s.id);}; $('navlist').appendChild(b);
-  if(s.id==='net') return;
-  var c=document.createElement('button'); c.className='nav'; c.textContent='Copy '+s.name.toLowerCase()+' values';
-  c.onclick=function(){ var txt=JSON.stringify(T[s.id],null,2); (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast('Copied');},function(){toast('Copy blocked');}); };
+  if(!groupBoxes[s.group]){ var d=document.createElement('details'); d.open=true; d.innerHTML='<summary>'+s.group+'</summary><div class="opts"></div>'; $('navgroups').appendChild(d); groupBoxes[s.group]=d.querySelector('.opts'); }
+  var b=document.createElement('button'); b.className='nav'; b.id='nav-'+s.id; b.textContent=s.name; b.onclick=function(){show(s.id);}; groupBoxes[s.group].appendChild(b);
+});
+TUNING.forEach(function(n){
+  var c=document.createElement('button'); c.className='nav'; c.textContent='Copy '+n+' values';
+  c.onclick=function(){ var txt=JSON.stringify(T[n],null,2); (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast('Copied');},function(){toast('Copy blocked');}); };
   $('copylist').appendChild(c);
 });
 
@@ -285,6 +414,7 @@ function frame(now){
     });
     drawBrain(dt);
   }
+  if(window.__canticleFrame) window.__canticleFrame(dt);
   requestAnimationFrame(frame);
 }
 function drawBrain(dt){
@@ -387,8 +517,278 @@ $('nPreset').onchange=function(){ loadPreset(); checkNet(); };
 function checkNet(){ var m; try{ m=JSON.parse($('nMsg').value); }catch(e){ $('nOut').textContent='not valid JSON'; return; } var r=K.netsync.validate(m,room); $('nOut').innerHTML=r?'<span style="color:#d1495b">dropped: '+r+'</span>':'<span style="color:#1f6feb">accepted, relay forwards it</span>'; }
 $('nCheck').onclick=checkNet;
 
+
+// ===== Batch two screens =====
+function stage(id){
+  var can=$(id), st={can:can, ctx:can.getContext('2d'), scale:1, drag:false, onDrag:null};
+  st.size=function(){ var w=can.clientWidth||640, h=w*0.6; can.style.height=h+'px'; can.width=w*devicePixelRatio; can.height=h*devicePixelRatio; st.scale=w/700; };
+  st.pos=function(ev){ var rc=can.getBoundingClientRect(); return {x:(ev.clientX-rc.left)/st.scale, y:(ev.clientY-rc.top)/st.scale}; };
+  st.begin=function(bg){ var c=st.ctx, s=st.scale*devicePixelRatio; c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,can.width,can.height); c.setTransform(s,0,0,s,0,0); c.fillStyle=bg||'#f3ead6'; c.fillRect(0,0,700,420); return c; };
+  can.addEventListener('pointerdown',function(e){ st.drag=true; if(st.onDrag) st.onDrag(st.pos(e),true); });
+  can.addEventListener('pointermove',function(e){ if(st.drag&&st.onDrag) st.onDrag(st.pos(e),false); });
+  window.addEventListener('pointerup',function(){ st.drag=false; });
+  return st;
+}
+function logTo(id, lines, s){ lines.unshift(s); lines.length=Math.min(lines.length,50); $(id).textContent=lines.join('\n'); }
+function dot(c,x,y,r,fill,stroke){ c.fillStyle=fill; c.beginPath(); c.arc(x,y,r,0,7); c.fill(); if(stroke){ c.strokeStyle=stroke; c.lineWidth=2; c.stroke(); } }
+function hpBar(c,x,y,w,frac,col){ c.fillStyle='#dde4f0'; c.fillRect(x-w/2,y,w,5); c.fillStyle=col||'#1f6feb'; c.fillRect(x-w/2,y,w*Math.max(0,Math.min(1,frac)),5); }
+
+// Spells and status
+var SP={st:null, foes:[], allies:[], caster:null, aim:{x:500,y:210}, lines:[], flash:[]};
+function spReset(){
+  SP.caster={id:'you',x:90,y:210,sp:9999,stats:{mind:+$('spMind').value||0}};
+  SP.allies=[{id:'ally1',x:120,y:150,hp:120,maxHp:400},{id:'ally2',x:130,y:280,hp:0,maxHp:400}];
+  var fams=['ember','frost','spark'];
+  SP.foes=[];
+  for(var i=0;i<7;i++){ var res={}; res[fams[i%3]]=-25; res[fams[(i+1)%3]]=40; SP.foes.push({id:'dummy'+(i+1),x:420+(i%3)*60+(i>2?25:0),y:130+Math.floor(i/3)*80,hp:900,maxHp:900,stats:{power:200,defense:120},resist:res}); }
+  SP.foes[6].boss=true; SP.foes[6].id='bossDummy'; SP.foes[6].resist.death=100; SP.foes[6].resist.paralysis=80;
+}
+function spCast(){
+  var name=$('spName').value, lv=+$('spLv').value||1, sp=T.spells.spells[name];
+  SP.caster.stats.mind=+$('spMind').value||0; SP.caster.boost=+$('spBoost').value||1;
+  var pool=sp.school==='support'?[SP.caster].concat(SP.allies):SP.foes;
+  var res=K.spells.cast(T.spells,T.status,name,lv,SP.caster,SP.aim,pool,Math.random);
+  if(!res.ok){ logTo('spLog',SP.lines,res.reason); return; }
+  SP.flash.push({name:name,t:0.4});
+  if(!res.results.length) logTo('spLog',SP.lines,name+' lv'+lv+' touched nobody');
+  res.results.forEach(function(r){ logTo('spLog',SP.lines,name+' lv'+lv+' > '+r.id+(r.damage!==undefined?' '+r.damage+' dmg':'')+(r.healed!==undefined?' +'+r.healed+' hp':'')+(r.revived?' revived':'')+(r.cured?' cured':'')+(r.status?' status '+r.status.reason:'')); });
+}
+function spInfo(){
+  var name=$('spName').value, lv=+$('spLv').value||1, sp=T.spells.spells[name];
+  $('spInfo').textContent=name+': '+sp.school+(sp.shape?' '+sp.shape:'')+', power '+Math.round(K.spells.power(T.spells,name,lv,+$('spBoost').value||1))+', radius '+K.spells.radius(T.spells,name,lv)+', cost '+sp.cost+', cast time '+sp.castTime+'s';
+}
+function spFrame(dt){
+  SP.foes.concat(SP.allies).forEach(function(f){ K.status.tick(T.status,f,dt).forEach(function(ev){ if(ev.type==='poisonTick') logTo('spLog',SP.lines,f.id+' poison -'+ev.damage); }); });
+  var c=SP.st.begin(), name=$('spName').value, lv=+$('spLv').value||1, sp=T.spells.spells[name], r=K.spells.radius(T.spells,name,lv);
+  c.strokeStyle='rgba(31,111,235,.35)'; c.setLineDash([6,6]);
+  if(sp.school==='support'||sp.shape==='burst'){ c.beginPath(); c.arc(SP.caster.x,SP.caster.y,r,0,7); c.stroke(); }
+  else if(sp.shape==='area'){ var ax=SP.aim.x-SP.caster.x, ay=SP.aim.y-SP.caster.y, al=Math.hypot(ax,ay)||1, reach=Math.min(al,T.spells.areaReach); c.beginPath(); c.arc(SP.caster.x+ax/al*reach,SP.caster.y+ay/al*reach,r,0,7); c.stroke(); }
+  else { c.beginPath(); var ang=Math.atan2(SP.aim.y-SP.caster.y,SP.aim.x-SP.caster.x); c.moveTo(SP.caster.x,SP.caster.y); c.lineTo(SP.caster.x+Math.cos(ang)*T.spells.boltRange,SP.caster.y+Math.sin(ang)*T.spells.boltRange); c.lineWidth=T.spells.boltWidth*2; c.strokeStyle='rgba(31,111,235,.12)'; c.setLineDash([]); c.stroke(); c.lineWidth=1; }
+  c.setLineDash([]);
+  dot(c,SP.aim.x,SP.aim.y,5,'#1f6feb');
+  SP.foes.forEach(function(f){ dot(c,f.x,f.y,16,f.hp>0?(f.boss?'#8b1e3f':'#d1495b'):'#bbb'); hpBar(c,f.x,f.y+20,40,f.hp/f.maxHp,'#d1495b'); c.fillStyle='#1b2333'; c.font='11px system-ui'; c.fillText(K.status.list(f).map(function(s){return s.split(' ')[0];}).join(' '),f.x-20,f.y-22); });
+  SP.allies.forEach(function(f){ dot(c,f.x,f.y,12,f.hp>0?'#2a9d6f':'#bbb'); hpBar(c,f.x,f.y+16,36,f.hp/f.maxHp,'#2a9d6f'); c.fillStyle='#1b2333'; c.font='11px system-ui'; c.fillText(K.status.list(f).map(function(s){return s.split(' ')[0];}).join(' '),f.x-20,f.y-18); });
+  dot(c,SP.caster.x,SP.caster.y,14,'#1f6feb','#fff');
+  SP.flash=SP.flash.filter(function(fl){ fl.t-=dt; c.fillStyle='rgba(31,111,235,'+(fl.t*1.5)+')'; c.font='bold 18px system-ui'; c.fillText(fl.name,SP.caster.x-20,SP.caster.y-26); return fl.t>0; });
+}
+
+// Comeback
+var CB={players:{}, chain:null};
+function cbBuild(){
+  var moves=Object.keys(T.comeback.moves), ids=['p1','p2','p3','p4'], html='';
+  ids.forEach(function(id,i){
+    CB.players[id]={level:20+i*15,meter:i===0?100:70-i*10,move:moves[i%moves.length]};
+    html+='<div class="row" style="border-top:1px solid var(--line);padding-top:6px"><b style="min-width:30px">'+id+'</b><label class="f">Level<input type="number" data-k="level" data-id="'+id+'" value="'+CB.players[id].level+'" style="width:70px"></label><label class="f">Meter<input type="number" data-k="meter" data-id="'+id+'" value="'+CB.players[id].meter+'" style="width:70px"></label><label class="f">Move<select data-k="move" data-id="'+id+'">'+moves.map(function(m){return '<option'+(m===CB.players[id].move?' selected':'')+'>'+m+'</option>';}).join('')+'</select></label>'+(i?'<button class="b ghost" data-join="'+id+'">Join</button><button class="b ghost" data-donate="'+id+'">Donate 20</button>':'')+'</div>';
+  });
+  $('cbPlayers').innerHTML=html;
+  $('cbPlayers').querySelectorAll('[data-k]').forEach(function(el){ el.onchange=function(){ var p=CB.players[el.dataset.id]; p[el.dataset.k]=el.dataset.k==='move'?el.value:+el.value; }; });
+  $('cbPlayers').querySelectorAll('[data-join]').forEach(function(el){ el.onclick=function(){ if(!CB.chain){ toast('Start a chain first'); return; } var r=K.comeback.join(T.comeback,CB.chain,CB.players,el.dataset.join); toast(r.ok?el.dataset.join+' joined':r.reason); cbSync(); }; });
+  $('cbPlayers').querySelectorAll('[data-donate]').forEach(function(el){ el.onclick=function(){ if(!CB.chain){ toast('Start a chain first'); return; } var r=K.comeback.donate(T.comeback,CB.chain,CB.players,el.dataset.donate,20); toast(r.ok?'gave '+r.given:r.reason); cbSync(); }; });
+}
+function cbSync(){ $('cbPlayers').querySelectorAll('[data-k="meter"]').forEach(function(el){ el.value=Math.round(CB.players[el.dataset.id].meter); }); cbState(); }
+function cbState(){ if(!CB.chain){ $('cbState').textContent='No chain running.'; return; } $('cbState').textContent=(CB.chain.open?'Window open, '+CB.chain.left.toFixed(1)+'s left. ':'Window closed. ')+'In chain: '+CB.chain.entries.map(function(e){return e.id;}).join(', ')+'. Donated '+CB.chain.donated+'.'; }
+function cbFire(){
+  if(!CB.chain) return;
+  var out=K.comeback.fire(T.comeback,CB.chain), html='<table><tr><th>Step</th><th>Player</th><th>Move</th><th>Power</th><th>vs defense 300</th></tr>';
+  out.forEach(function(o){ html+='<tr><td>'+(o.chainStep+1)+'</td><td>'+o.id+'</td><td>'+o.move+'</td><td>'+o.power+'</td><td>'+(o.type&&o.type.indexOf('strike')===0?K.comeback.strikeDamage(T.comeback,o.power,300):'')+'</td></tr>'; });
+  $('cbOut').innerHTML=html+'</table>'; CB.chain=null; cbSync();
+}
+function cbFrame(dt){ if(CB.chain&&CB.chain.open){ if(K.comeback.tickChain(T.comeback,CB.chain,dt)) cbFire(); else cbState(); } }
+
+// Bestiary
+var BE={st:null, world:null, lines:[], flash:0};
+function beReset(){
+  var set=$('beSet').value, w={players:[{id:'p',x:350,y:300,alive:true}],enemies:[],shots:[]}, t=T.bestiary;
+  function add(list){ w.enemies=w.enemies.concat(list); }
+  if(set==='mix'||set==='flyer') add([K.bestiary.create('flyer',{x:150,y:90,maxHp:80}),K.bestiary.create('flyer',{x:560,y:110,maxHp:80})]);
+  if(set==='mix'||set==='gunner') add([K.bestiary.create('gunner',{x:620,y:220,maxHp:90})]);
+  if(set==='mix'||set==='phantom') add(K.bestiary.createPhantom(t,{x:350,y:120,maxHp:120}));
+  if(set==='mix'||set==='splitter') add([K.bestiary.createSplitter(t,{x:120,y:250,maxHp:240})]);
+  if(set==='mix'||set==='nest') add([K.bestiary.create('nest',{x:600,y:60,maxHp:160})]);
+  if(set==='boss') add([K.bestiary.createBoss(t,{x:350,y:140})]);
+  BE.world=w; BE.lines=[]; logTo('beLog',BE.lines,'spawned '+set);
+}
+function beNearest(filter){ var p=BE.world.players[0], best=null, bd=1e9; BE.world.enemies.forEach(function(e){ if(e.hp<=0||e.state==='gone'||(filter&&!filter(e))) return; var d=Math.hypot(e.x-p.x,e.y-p.y); if(d<bd){bd=d;best=e;} }); return best; }
+function beHit(e,amt,opts){ if(!e) return; K.bestiary.hurt(BE.world,T.bestiary,e,amt,opts).forEach(function(ev){ logTo('beLog',BE.lines,ev.type+' '+ev.enemy+(ev.part?' '+ev.part:'')+(ev.damage!==undefined?' '+ev.damage:'')); }); }
+function beFrame(dt){
+  var w=BE.world, t=T.bestiary;
+  K.bestiary.tick(w,t,dt).forEach(function(ev){ if(ev.type==='strike'||ev.type==='shotHit'||ev.type==='attack') BE.flash=0.25; if(ev.type!=='shot'&&ev.type!=='strike'&&ev.type!=='shotHit') logTo('beLog',BE.lines,ev.type+' '+ev.enemy+(ev.attack?' '+ev.attack:'')+(ev.phase!==undefined?' phase '+(ev.phase+1):'')); });
+  var c=BE.st.begin();
+  w.shots.forEach(function(s){ dot(c,s.x,s.y,4,'#8b1e3f'); });
+  w.enemies.forEach(function(e){
+    var col={flyer:'#7b5ea7',gunner:'#5b6782',phantom:'#2a9d6f',splitter:'#e0a030',nest:'#8b5a2b',swarm:'#d1495b',boss:'#8b1e3f'}[e.kind]||'#999';
+    c.globalAlpha=(e.kind==='phantom'&&!e.visible)?0.18:1;
+    if(e.kind==='flyer'){ dot(c,e.x,e.y,8,'rgba(0,0,0,.15)'); dot(c,e.x,e.y-e.z,12,col); }
+    else if(e.kind==='nest'){ c.fillStyle=col; c.fillRect(e.x-18,e.y-18,36,36); }
+    else if(e.kind==='splitter'){ dot(c,e.x,e.y,6+e.size*6,col); }
+    else if(e.kind==='swarm'){ dot(c,e.x,e.y,5,col); }
+    else if(e.kind==='boss'){ dot(c,e.x,e.y,46,col); var i=0; Object.keys(e.parts).forEach(function(k){ var p=e.parts[k], a=-2.2+i*1.1; i++; dot(c,e.x+Math.cos(a)*54,e.y+Math.sin(a)*54,14,p.broken?'#bbb':'#d1495b'); c.fillStyle='#1b2333'; c.font='11px system-ui'; c.fillText(k+(p.broken?' broken':' '+p.hp),e.x+Math.cos(a)*54-24,e.y+Math.sin(a)*54-18); }); hpBar(c,e.x,e.y+56,120,e.hp/e.maxHp,'#8b1e3f'); }
+    else { c.save(); c.translate(e.x,e.y); c.rotate(e.heading); c.fillStyle=col; c.beginPath(); c.moveTo(16,0); c.lineTo(-12,11); c.lineTo(-12,-11); c.closePath(); c.fill(); c.restore(); }
+    c.globalAlpha=1;
+    if(e.kind!=='boss'&&e.kind!=='swarm'){ hpBar(c,e.x,e.y+18,34,e.hp/e.maxHp,col); c.fillStyle='#1b2333'; c.font='12px system-ui'; c.fillText((e.decoyOf?'decoy ':'')+e.state,e.x-18,e.y-22-(e.z||0)); }
+  });
+  var p=w.players[0]; if(BE.flash>0) BE.flash-=dt;
+  dot(c,p.x,p.y,14,BE.flash>0?'#d1495b':'#1f6feb','#fff');
+}
+
+// Traps
+var TR={st:null, traps:[], player:null, lines:[], hp:1000, fence:null, flash:0};
+function trReset(){
+  var t=T.traps; TR.player={id:'p',x:60,y:380,alive:true}; TR.hp=1000;
+  TR.traps=[K.traps.create(t,'blast',{x:180,y:300}),K.traps.create(t,'freeze',{x:330,y:330}),K.traps.create(t,'shock',{x:480,y:300,hidden:true}),K.traps.create(t,'daze',{x:600,y:360}),K.traps.create(t,'snare',{x:250,y:170}),K.traps.create(t,'saw',{x:420,y:170,angle:0}),K.traps.create(t,'fence',{x:620,y:150,angle:Math.PI/2})];
+  TR.fence=TR.traps[6]; TR.lines=[]; $('trHp').value=TR.hp;
+}
+function trFrame(dt){
+  var tier=+$('trTier').value||0;
+  K.traps.tick(T.traps,TR.traps,[TR.player],dt,tier).forEach(function(ev){
+    if(ev.type==='hit'){ TR.hp-=ev.damage; TR.flash=0.2; logTo('trLog',TR.lines,ev.trap+' hit for '+ev.damage); }
+    else if(ev.type==='fire'){ ev.hits.forEach(function(h){ if(h.damage) TR.hp-=h.damage; TR.flash=0.3; }); logTo('trLog',TR.lines,ev.kind+' fired: '+(ev.hits.length?ev.hits.map(function(h){return h.damage?h.damage+' dmg':(h.hold?'held '+h.hold+'s':h.status+' '+h.chance+'%');}).join(', '):'missed')); }
+    else logTo('trLog',TR.lines,ev.type+' '+ev.trap);
+  });
+  $('trHp').value=Math.max(0,TR.hp);
+  var c=TR.st.begin('#efe6d2');
+  TR.traps.forEach(function(tr){
+    var k=T.traps.kinds[tr.kind];
+    if(tr.kind==='saw'||tr.kind==='fence'){
+      var half=k.length/2; c.strokeStyle=tr.kind==='fence'?(tr.on?'#d1495b':'#ccc'):'#9aa5bd'; c.lineWidth=tr.kind==='fence'?4:2; c.beginPath(); c.moveTo(tr.x-Math.cos(tr.angle)*half,tr.y-Math.sin(tr.angle)*half); c.lineTo(tr.x+Math.cos(tr.angle)*half,tr.y+Math.sin(tr.angle)*half); c.stroke(); c.lineWidth=1;
+      if(tr.kind==='saw'){ var e=K.traps.lineEnds(T.traps,tr).blade; dot(c,e.x,e.y,k.hitRadius,'#5b6782'); }
+    } else {
+      if(tr.hidden) { c.globalAlpha=0.15; }
+      c.strokeStyle='rgba(209,73,91,.25)'; c.setLineDash([4,6]); c.beginPath(); c.arc(tr.x,tr.y,k.notice,0,7); c.stroke(); c.setLineDash([]);
+      var col={idle:'#9aa5bd',armed:'#e0a030',fuse:'#d1495b',spent:'#ddd',rearming:'#ccc',broken:'#ddd'}[tr.state];
+      c.fillStyle=col; c.fillRect(tr.x-12,tr.y-12,24,24); c.globalAlpha=1;
+      c.fillStyle='#1b2333'; c.font='12px system-ui'; c.fillText(tr.hidden?'?':tr.kind+' '+tr.state,tr.x-22,tr.y-18);
+    }
+  });
+  if(TR.flash>0) TR.flash-=dt;
+  dot(c,TR.player.x,TR.player.y,13,TR.flash>0?'#d1495b':'#1f6feb','#fff');
+}
+
+// Quest script
+var QS={vm:null, lines:[], pending:null};
+var SAMPLE_QUEST=['# The Dry Well. A sample quest for the runner.','start:','  on "enemyDied" kill','  on "talkElder" elder','  on "playerDied" died','  rule lives 2','  music "dust_theme"','  msg "The well went dry. Clear the hounds around it."','  set r1 0','  set r2 0','  waitflag f5','  msg "The hounds are gone. Talk to the elder."','  end','kill:','  add r1 1','  msg "Hounds down:" r1','  if r1 >= 3 cleared','  end','cleared:','  flag f5','  door "well_gate" unlock','  end','elder:','  ifflag f5 reward','  msg "Elder: the hounds still circle."','  end','reward:','  choice r3 "Take the salve" "Take the coin"','  if r3 == 0 salve','  coin 300','  success','salve:','  give "Big Cactus Salve" 3','  success','died:','  add r2 1','  if r2 > 2 lose','  msg "Back on your feet."','  end','lose:','  fail'].join('\n');
+function qsRun(){
+  var prog=K.script.parse($('qsText').value); QS.lines=[];
+  if(prog.errors.length){ $('qsState').textContent=prog.errors.join(' '); return; }
+  QS.vm=K.script.createVM(prog,{op:function(name,args,vm){
+    if(name==='choice'){ var regi=+String(arguments[4][0]).slice(1), done=false; qsShowChoice(args.slice(1),function(i){ vm.setReg(regi,i); done=true; }); return function(){ return !done; }; }
+  }});
+  QS.vm.start('start'); qsStep();
+}
+function qsShowChoice(opts,cb){ $('qsChoice').innerHTML=''; opts.forEach(function(o,i){ var b=document.createElement('button'); b.className='b'; b.textContent=o; b.onclick=function(){ $('qsChoice').innerHTML=''; cb(i); qsStep(); }; $('qsChoice').appendChild(b); }); }
+function qsStep(){ if(!QS.vm) return; QS.vm.tick(0.016); var shown=QS.vm.log.slice().reverse(); $('qsLog').textContent=shown.join('\n'); $('qsState').textContent='Threads '+QS.vm.threads.length+'. Hounds r1 '+QS.vm.regs[1]+'. Deaths r2 '+QS.vm.regs[2]+'. Flags '+Object.keys(QS.vm.flags).map(function(f){return 'f'+f;}).join(' ')+'. Rules '+JSON.stringify(QS.vm.rules)+(QS.vm.done?'. Quest '+QS.vm.done:''); }
+function qsFrame(dt){ if(QS.vm&&QS.vm.threads.length){ var n=QS.vm.log.length; QS.vm.tick(dt); if(QS.vm.log.length!==n) qsStep(); } }
+
+// Economy
+var EC={item:null, trade:null, a:null, b:null, step:0};
+function ecRoll(){
+  var ch=K.rng.channels('shop'+Date.now()), s=K.economy.rollShop(T.economy,T.loot,ch,+$('ecLv').value||1), out=[];
+  ['weapon','armor','tool'].forEach(function(k){ out.push(k.toUpperCase()); s[k].forEach(function(x){ out.push('  '+K.loot.describe(x.item)+'  '+x.price+' coin, sells for '+K.economy.sellPrice(T.economy,x.item)); }); });
+  $('ecShop').textContent=out.join('\n');
+}
+function ecShow(msg){ $('ecItem').textContent=(msg?msg+'\n':'')+(EC.item?(EC.item.unidentified?'??? unidentified weapon':K.loot.describe(EC.item))+'\nrefine cap '+K.economy.refineCap(T.economy,EC.item)+', worth '+K.economy.price(T.economy,EC.item)+' coin':'')+'\nwallet '+$('ecCoin').value+', grit '+$('ecGrit').value; }
+function ecFind(){ var ch=K.rng.channels('find'+Date.now()); var w; do { w=K.loot.build(T.loot,ch,'weapon',4); } while(!w.special); EC.item=K.economy.maybeUnidentified(T.economy,w,{get:function(){return {chance:function(){return true;}};}}); ecShow('found something'); }
+function ecAppraise(){ if(!EC.item) return; var wallet={coin:+$('ecCoin').value}; var r=K.economy.appraise(T.economy,EC.item,wallet,K.rng.channels('ap'+Date.now())); $('ecCoin').value=wallet.coin; ecShow(r.ok?'appraised'+(r.shift>0?', refinement went up':(r.shift<0?', refinement went down':'')):r.reason); }
+function ecRefine(){ if(!EC.item) return; var inv={'Refining Grit':+$('ecGrit').value}; var r=K.economy.refine(T.economy,EC.item,inv); $('ecGrit').value=inv['Refining Grit']; ecShow(r.ok?'refined to +'+r.refine:r.reason); }
+var TD_STEPS=['B accepts','A offers a salve','B offers coin','A confirms offer','B confirms offer','A confirms final','B confirms final'];
+function tdNew(){ EC.a={id:'A',x:0,y:0,items:[{category:'tool',name:'Big Cactus Salve'},{category:'charm',stars:2}],coin:50}; EC.b={id:'B',x:30,y:0,items:[{category:'tool',name:'Antidote Tea'}],coin:900}; EC.trade=K.economy.trade(T.economy,EC.a,EC.b); EC.trade.log.push('A requested a trade'); EC.step=0; tdShow(); }
+function tdStepFn(){
+  if(!EC.trade) tdNew(); var s=EC.trade, n=EC.step++;
+  if(n===0) s.accept('B'); else if(n===1) s.addItem('A',0); else if(n===2) s.setCoin('B',400); else if(n===3) s.confirmOffer('A'); else if(n===4) s.confirmOffer('B'); else if(n===5) s.confirmFinal('A'); else if(n===6) s.confirmFinal('B'); else s.log.push('nothing left to do');
+  tdShow();
+}
+function tdShow(){ var s=EC.trade; $('tdLog').textContent='state '+s.state+(EC.step<TD_STEPS.length?', next: '+TD_STEPS[EC.step]:'')+'\nA has '+EC.a.items.map(function(i){return i.name||('charm '+i.stars);}).join(', ')+' and '+EC.a.coin+' coin\nB has '+EC.b.items.map(function(i){return i.name||('charm '+i.stars);}).join(', ')+' and '+EC.b.coin+' coin\n\n'+s.log.slice().reverse().join('\n'); }
+
+// Companion
+var CO={c:null, clock:0, lines:[]};
+function coNew(){ CO.c=K.companion.create(T.companion,{archetype:$('coArch').value}); CO.clock=0; CO.lines=[]; logTo('coLog',CO.lines,'a new '+CO.c.form+' hatched'); coView(); }
+function coView(){
+  var c=CO.c, t=T.companion, html='<table><tr><th>'+c.form+'</th><th>Level</th><th>Progress</th></tr>';
+  t.tracks.forEach(function(k){ var tr=c.tracks[k]; html+='<tr><td>'+k+'</td><td>'+tr.level+'</td><td><div class="bar" style="width:'+tr.progress+'%"></div></td></tr>'; });
+  var b=K.companion.statBonus(t,c);
+  html+='</table><p class="note">Total level '+K.companion.totalLevel(c)+'. Bond '+c.bond+'. Smarts '+c.smarts+' (action bonus +'+K.companion.smartsBonus(t,c)+'%). Gives '+Object.keys(b).map(function(k){return k+' +'+b[k];}).join(', ')+'. Comeback moves: '+(c.unlocked.join(', ')||'none yet')+'.</p>';
+  $('coView').innerHTML=html;
+}
+function coFeedButtons(){ var items=Object.keys(T.companion.feedTables.early); $('coFeed').innerHTML=''; items.forEach(function(it){ var b=document.createElement('button'); b.className='b ghost'; b.textContent='Feed '+it; b.onclick=function(){ var r=K.companion.feed(T.companion,CO.c,it,CO.clock,$('coCool').value==='skip'); logTo('coLog',CO.lines,r.ok?'ate '+it+(r.evolved?', evolved into '+r.evolved.to:'')+(r.unlocked.length?', unlocked '+r.unlocked.join(', '):''):it+': '+r.reason); coView(); }; $('coFeed').appendChild(b); }); }
+
+// Modes
+function moTiers(){
+  var html='<table><tr><th>Tier</th><th>Min level</th><th>Health</th><th>Power</th><th>Defense</th><th>Exp level</th><th>Loot depth</th></tr>';
+  T.modes.tiers.forEach(function(d,i){ var s=K.modes.scaleEnemy(T.modes,i,{maxHp:100,stats:{power:50,defense:30,accuracy:40,evasion:20},level:10,depth:1}); html+='<tr><td>'+d.name+'</td><td>'+d.minLevel+'</td><td>'+s.maxHp+'</td><td>'+s.stats.power+'</td><td>'+s.stats.defense+'</td><td>'+s.level+'</td><td>'+s.lootDepth+'</td></tr>'; });
+  $('moTiers').innerHTML=html+'</table>';
+}
+function moChallenge(){
+  var s=K.modes.challenge(T.modes,+$('moStage').value,['p1','p2','p3']), deaths=+$('moDeaths').value||0, time=+$('moTime').value||0;
+  s.reachCheckpoint(1);
+  for(var i=0;i<deaths;i++){ s.tick(time/(deaths+1)); if(s.death('p'+(1+i%3))==='lost') break; }
+  if(s.state==='running'){ s.tick(time/(deaths+1)); s.clear(); }
+  var prize=s.rank?K.modes.bestPrize(T.modes,[s.rank]):null;
+  $('moChal').textContent='Stage '+s.stage.name+', everyone set to level '+s.stage.level+'\nLoadout '+JSON.stringify(s.stage.loadout)+'\n'+s.log.join('\n')+'\nLives left '+s.livesLeft+(prize?'\nPrize '+prize.prize:'');
+}
+function moBattle(){
+  var name=$('moPreset').value, rules=T.modes.battle.presets[name], ids=['ana','bo','cy','dee'];
+  var b=K.modes.battle(T.modes,name,ids.map(function(id,i){return {id:id,team:rules.teams?(i%2?'blue':'sand'):null};}));
+  var guard=0;
+  while(b.state==='running'&&guard++<400){
+    b.tick(5);
+    var alive=ids.filter(function(id){return !b.tally[id].out;}); if(alive.length<2) break;
+    var a=alive[Math.floor(Math.random()*alive.length)], d=alive[Math.floor(Math.random()*alive.length)];
+    if(a===d||(rules.teams&&b.tally[a].team===b.tally[d].team)) continue;
+    b.damage(a,d,100+Math.floor(Math.random()*300));
+    if(Math.random()<0.35) b.kill(a,d);
+  }
+  var html='<table><tr><th>Player</th><th>Team</th><th>Kills</th><th>Deaths</th><th>Score</th></tr>';
+  b.standings().forEach(function(s){ html+='<tr><td>'+s.id+'</td><td>'+(s.tally.team||'')+'</td><td>'+s.tally.kills+'</td><td>'+s.tally.deaths+'</td><td>'+s.score+'</td></tr>'; });
+  $('moBat').innerHTML=html+'</table><p class="note">'+b.log.slice(-4).join('. ')+'. Match time '+Math.round(b.time)+'s.</p>';
+}
+
+function bootTwo(){
+  SP.st=stage('spCan'); BE.st=stage('beCan'); TR.st=stage('trCan');
+  fillSelect($('spName'),Object.keys(T.spells.spells)); spReset(); spInfo();
+  $('spName').onchange=spInfo; $('spLv').oninput=spInfo; $('spBoost').oninput=spInfo;
+  SP.st.onDrag=function(p){ SP.aim=p; };
+  $('spCast').onclick=spCast; $('spReset').onclick=function(){ spReset(); SP.lines=[]; $('spLog').textContent=''; };
+  $('spPoison').onclick=function(){ SP.foes.forEach(function(f){ K.status.apply(T.status,f,'poison',0,{chance:100}); }); };
+  cbBuild(); cbState();
+  $('cbStart').onclick=function(){ var r=K.comeback.startChain(T.comeback,CB.players,'p1'); if(!r.ok){ toast(r.reason); return; } CB.chain=r.chain; cbSync(); };
+  $('cbFire').onclick=cbFire; $('cbFill').onclick=function(){ Object.keys(CB.players).forEach(function(k){ CB.players[k].meter=100; }); cbSync(); };
+  beReset(); $('beSet').onchange=beReset; $('beReset').onclick=beReset;
+  BE.st.onDrag=function(p){ BE.world.players[0].x=p.x; BE.world.players[0].y=p.y; };
+  $('beSwing').onclick=function(){ beHit(beNearest(function(e){return e.kind!=='boss';})||beNearest(),45,{}); };
+  $('beSweep').onclick=function(){ beHit(beNearest(),45,{lowSweep:true}); };
+  $('beBlast').onclick=function(){ var p=BE.world.players[0]; BE.world.enemies.slice().forEach(function(e){ if(e.hp>0&&Math.hypot(e.x-p.x,e.y-p.y)<150) beHit(e,35,{area:true}); }); };
+  $('bePart').onclick=function(){ var b=BE.world.enemies.filter(function(e){return e.kind==='boss';})[0]; if(!b){ toast('Spawn the boss first'); return; } var part=Object.keys(b.parts).filter(function(k){return !b.parts[k].broken;})[0]; beHit(b,120,part?{part:part}:{}); };
+  fillSelect($('trTier'),T.modes.tiers.map(function(d,i){return String(i);})); $('trTier').querySelectorAll('option').forEach(function(o,i){ o.textContent=T.modes.tiers[i].name; });
+  trReset(); TR.st.onDrag=function(p){ TR.player.x=p.x; TR.player.y=p.y; };
+  $('trReset').onclick=trReset; $('trFence').onclick=function(){ K.traps.setFence(TR.fence,!TR.fence.on); };
+  $('qsText').value=SAMPLE_QUEST; $('qsRun').onclick=qsRun;
+  document.querySelectorAll('[data-ev]').forEach(function(b){ b.onclick=function(){ if(!QS.vm){ qsRun(); } var ok=QS.vm.emit(b.dataset.ev); if(!ok) QS.vm.log.push('nobody listens for '+b.dataset.ev); qsStep(); }; });
+  $('ecRoll').onclick=ecRoll; $('ecFind').onclick=ecFind; $('ecAppraise').onclick=ecAppraise; $('ecRefine').onclick=ecRefine; ecRoll();
+  $('tdNew').onclick=tdNew; $('tdStep').onclick=tdStepFn;
+  $('tdChange').onclick=function(){ if(!EC.trade) return; EC.trade.setCoin('B',350); EC.trade.log.push('B changed the offer, both confirmations reset'); if(EC.step>3) EC.step=3; tdShow(); };
+  $('tdWalk').onclick=function(){ if(!EC.trade) return; EC.b.x=500; EC.trade.checkRange(); tdShow(); };
+  tdNew();
+  coFeedButtons(); coNew(); $('coNew').onclick=coNew;
+  document.querySelectorAll('[data-tr]').forEach(function(b){ b.onclick=function(){ var r=K.companion.trigger(T.companion,CO.c,b.dataset.tr); logTo('coLog',CO.lines,b.dataset.tr+': '+(!r?CO.c.form+' has no action for this':(r.fired?r.action+' at strength '+r.strength.toFixed(2):'stayed put')+' (chance '+(r?r.chance:0)+'%)')); }; });
+  moTiers(); fillSelect($('moStage'),T.modes.challenge.stages.map(function(s,i){return String(i);})); $('moStage').querySelectorAll('option').forEach(function(o,i){ o.textContent=T.modes.challenge.stages[i].name; });
+  fillSelect($('moPreset'),Object.keys(T.modes.battle.presets)); $('moRun').onclick=moChallenge; $('moBattle').onclick=moBattle; moChallenge(); moBattle();
+  buildSliders('spells',$('t-spells'),spInfo); buildSliders('status',$('t-status'),function(){});
+  buildSliders('comeback',$('t-comeback'),function(){}); buildSliders('bestiary',$('t-bestiary'),function(){});
+  buildSliders('traps',$('t-traps'),function(){}); buildSliders('economy',$('t-economy'),function(){});
+  buildSliders('companion',$('t-companion'),coView); buildSliders('modes',$('t-modes'),moTiers);
+}
+window.__canticleShow=function(id){ if(id==='spells') SP.st.size(); if(id==='bestiary') BE.st.size(); if(id==='traps') TR.st.size(); };
+window.__canticleFrame=function(dt){
+  if($('s-spells').classList.contains('on')) spFrame(dt);
+  if($('s-bestiary').classList.contains('on')) beFrame(dt);
+  if($('s-traps').classList.contains('on')) trFrame(dt);
+  if($('s-script').classList.contains('on')) qsFrame(dt);
+  cbFrame(dt);
+};
+
+
 // Boot
-Promise.all(['combat','brain','loot','growth','floor'].map(function(n){
+Promise.all(TUNING.map(function(n){
   return fetch('tuning/a-canticle-for-pajamastan-v1-'+n+'.json').then(function(r){ return r.json(); }).then(function(j){ T[n]=j; });
 })).then(function(){
   var classes=Object.keys(T.growth.classes);
@@ -402,11 +802,11 @@ Promise.all(['combat','brain','loot','growth','floor'].map(function(n){
   buildSliders('growth',$('t-growth'),function(){ drawGrowth(); });
   buildSliders('floor',$('t-floor'),buildFloor);
   $('cRun').onclick=runCombat;
-  resetBrain(); loadPreset(); checkNet(); runCombat();
+  resetBrain(); loadPreset(); checkNet(); runCombat(); bootTwo();
   show(load('tab')||'combat');
   requestAnimationFrame(frame);
 }).catch(function(e){ document.querySelector('main').innerHTML='<div class="card">Tuning files failed to load: '+e+'</div>'; });
-window.addEventListener('resize',function(){ sizeBrain(); if($('s-growth').classList.contains('on')) drawGrowth(); if($('s-floor').classList.contains('on')) buildFloor(); });
+window.addEventListener('resize',function(){ sizeBrain(); ['spells','bestiary','traps'].forEach(function(k){ if($('s-'+k).classList.contains('on')) window.__canticleShow(k); }); if($('s-growth').classList.contains('on')) drawGrowth(); if($('s-floor').classList.contains('on')) buildFloor(); });
 })();
 </script>
 </body>

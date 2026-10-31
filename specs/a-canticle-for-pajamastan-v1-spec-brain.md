@@ -18,4 +18,4 @@ Hurt is entered when a hit lands that deals at least the flinch threshold of the
 
 Dying is entered at zero health. The body slides in the direction of the knockback, turned sideways to the side the blow came from, then enters gone and is removed.
 
-Pack mourning is the signature behavior. When a pack leader dies, every surviving follower in its group stops, faces the leader's body and holds there for a mourning time. At the end of the mourning time each follower gets a lasting rage buff that raises its power and its speed. Killing the leader first makes the rest of the pack harder, so players have a reason to think about kill order.
+Pack mourning is the signature behavior. When a pack leader dies, every surviving follower in its group stops, faces the leader's body and holds there for a mourning time. Partway through the mourning, each follower casts a guard down on its current target, and near the end it casts a power down. Then it goes back to the attack loop. Killing the leader first weakens the player, so kill order becomes a real decision. The tuning file also has an optional rage multiplier for followers, set to no change by default.

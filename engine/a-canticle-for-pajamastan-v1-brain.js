@@ -223,18 +223,29 @@
         e.timer -= dt;
         if (e.timer <= 0) { if (target) approach(e, tuning, rand, world, events); else enter(e, 'return', tuning, rand, world, events); }
         break;
-      case 'mourn':
+      case 'mourn': {
         e.timer -= dt;
         if (e.mournAt) turnToward(e, angleTo(e, e.mournAt), tuning, dt);
+        var spent = 1 - e.timer / tuning.mourningTime;
+        var victim = target || nearestPlayer(world, e, tuning.senseRadiusLeader);
+        if (!e.cursedGuard && spent >= (tuning.mournGuardDownAt || 0.5)) {
+          e.cursedGuard = true;
+          if (victim) events.push({ type: 'curse', enemy: e.id, target: victim.id, kind: 'guardDown', value: tuning.mournCursePercent || 20 });
+        }
+        if (!e.cursedPower && spent >= (tuning.mournPowerDownAt || 0.8)) {
+          e.cursedPower = true;
+          if (victim) events.push({ type: 'curse', enemy: e.id, target: victim.id, kind: 'powerDown', value: tuning.mournCursePercent || 20 });
+        }
         if (e.timer <= 0) {
-          e.enraged = true;
           e.powerMult = tuning.rageBuffPower;
           e.speedMult = tuning.rageBuffSpeed;
-          events.push({ type: 'rage', enemy: e.id });
+          e.enraged = tuning.rageBuffPower > 1 || tuning.rageBuffSpeed > 1;
+          if (e.enraged) events.push({ type: 'rage', enemy: e.id });
           var t2 = target || nearestPlayer(world, e, tuning.senseRadiusLeader);
           if (t2) { e.target = t2.id; approach(e, tuning, rand, world, events); } else enter(e, 'return', tuning, rand, world, events);
         }
         break;
+      }
       case 'dying':
         e.timer -= dt;
         e.x += e.knock.x * dt * 40; e.y += e.knock.y * dt * 40;
