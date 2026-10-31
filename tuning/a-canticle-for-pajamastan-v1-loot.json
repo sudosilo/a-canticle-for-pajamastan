@@ -17,7 +17,7 @@
   "bonusAmountWeights": { "5": 30, "10": 26, "15": 18, "20": 12, "25": 7, "30": 4, "35": 2, "40": 1 },
   "specialChance": 18,
   "specialTierMax": 4,
-  "specials": ["Searing", "Chilling", "Static", "Draining", "Hushing"],
+  "specials": ["Searing", "Chilling", "Static", "Draining", "Thirsting", "Learning", "Hushing", "Splitting"],
   "armorMaxBonus": { "defense": 6, "evasion": 8 },
   "charmStarCeiling": 4,
   "tools": { "Cactus Salve": 40, "Big Cactus Salve": 14, "Canteen Tonic": 22, "Moonlight Revive": 4, "Antidote Tea": 12, "Spell Scroll": 8 },
