@@ -872,12 +872,12 @@ var PL = { on:false };
 window.CanticlePlay = PL;
 var CELL = 420, HALF = 150, HALL = 36, VIEW = 520;
 var KINDS = {
-  pack:     { hp:70,  power:40, defense:10, accuracy:60, evasion:30, luck:5,  family:'beast',   exp:12, loot:'duneHound' },
-  flyer:    { hp:55,  power:36, defense:8,  accuracy:70, evasion:60, luck:5,  family:'wild',    exp:14, loot:'glassMoth' },
-  gunner:   { hp:80,  power:34, defense:18, accuracy:80, evasion:20, luck:5,  family:'machine', exp:16, loot:'rustCrawler' },
-  phantom:  { hp:90,  power:48, defense:14, accuracy:70, evasion:50, luck:8,  family:'shade',   exp:20, loot:'shadeMonk' },
-  splitter: { hp:120, power:28, defense:6,  accuracy:50, evasion:10, luck:5,  family:'wild',    exp:6,  loot:'glassMoth' },
-  nest:     { hp:150, power:0,  defense:20, accuracy:0,  evasion:0,  luck:0,  family:'beast',   exp:25, loot:'rustCrawler' },
+  pack:     { hp:45,  power:40, defense:10, accuracy:60, evasion:30, luck:5,  family:'beast',   exp:12, loot:'duneHound' },
+  flyer:    { hp:40,  power:36, defense:8,  accuracy:70, evasion:60, luck:5,  family:'wild',    exp:14, loot:'glassMoth' },
+  gunner:   { hp:55,  power:34, defense:18, accuracy:80, evasion:20, luck:5,  family:'machine', exp:16, loot:'rustCrawler' },
+  phantom:  { hp:65,  power:48, defense:14, accuracy:70, evasion:50, luck:8,  family:'shade',   exp:20, loot:'shadeMonk' },
+  splitter: { hp:90, power:28, defense:6,  accuracy:50, evasion:10, luck:5,  family:'wild',    exp:6,  loot:'glassMoth' },
+  nest:     { hp:110, power:0,  defense:20, accuracy:0,  evasion:0,  luck:0,  family:'beast',   exp:25, loot:'rustCrawler' },
   swarm:    { hp:12,  power:14, defense:0,  accuracy:60, evasion:70, luck:0,  family:'beast',   exp:2,  loot:null },
   boss:     { hp:400, power:70, defense:30, accuracy:90, evasion:20, luck:10, family:'shade',   exp:300, loot:'shadeMonk' }
 };
@@ -1350,7 +1350,7 @@ function bootThree(){
 (function(){
   var prevShow=window.__canticleShow, prevFrame=window.__canticleFrame;
   window.__canticleShow=function(id){ if(prevShow) prevShow(id); if(id==='play'){ plSize(); if(!PL.on) plNewRun(); } if(id==='actions') AC.st.size(); if(id==='camera') CA.st.size(); };
-  window.__canticleFrame=function(dt){ if(prevFrame) prevFrame(dt); if($('s-play').classList.contains('on')) plFrame(dt); if($('s-actions').classList.contains('on')) acFrame(dt); if($('s-camera').classList.contains('on')) caFrame(dt); };
+  window.__canticleFrame=function(dt){ if(prevFrame) prevFrame(dt); if($('s-play').classList.contains('on')){ var reps=Math.max(1,Math.min(8,window.CanticleTimeScale||1)); for(var q=0;q<reps;q++) plFrame(dt); } if($('s-actions').classList.contains('on')) acFrame(dt); if($('s-camera').classList.contains('on')) caFrame(dt); };
 })();
 
 

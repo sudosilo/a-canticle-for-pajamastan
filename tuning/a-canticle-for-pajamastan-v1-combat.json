@@ -1,5 +1,5 @@
 {
-  "hitChanceBase": 60,
+  "hitChanceBase": 70,
   "accuracyFactor": 0.4,
   "powerFactor": 0.25,
   "elementFactor": 0.25,
