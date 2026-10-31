@@ -9,7 +9,7 @@
     "special": { "windUp": 0.3, "active": 0.12, "recover": 0.34, "openAt": 0.65 }
   },
   "chainLength": 3,
-  "meleeReach": 42,
+  "meleeReach": 52,
   "meleeArcDeg": 110,
   "lockConeDeg": 60,
   "lockRange": 320,

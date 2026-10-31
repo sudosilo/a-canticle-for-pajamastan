@@ -5,7 +5,7 @@
   "leashDistance": 520,
   "chaseChance": 0.55,
   "flankOffset": 90,
-  "circleRange": 70,
+  "circleRange": 56,
   "circleTimeMin": 0.9,
   "circleTimeMax": 2.4,
   "lungeChancePerTick": 0.012,
