@@ -1564,7 +1564,7 @@ function woFrame(dt){
   WO.foes.forEach(function(f){ if(f.hp>0){ dot(c,f.x,f.y,12,'#d1495b'); hpBar(c,f.x,f.y+16,30,f.hp/100,'#d1495b'); } });
   K.particles.draw(WO.parts,c);
   dot(c,WO.pl.x,WO.pl.y,13,'#1f6feb','#fff');
-  c.fillStyle='#1b2333'; c.font='14px system-ui'; c.fillText('health '+Math.round(WO.hp)+'   keys '+WO.inv['Copper Key'],10,20);
+  c.fillStyle='#1b2333'; c.font='20px system-ui'; c.fillText('health '+Math.round(WO.hp)+'   keys '+WO.inv['Copper Key'],10,20);
 }
 
 var PA={st:null,sys:null};
@@ -1580,7 +1580,7 @@ function twFrame(dt){
   TW.town.people.forEach(function(p){
     var col={service:'#2a9d6f',guard:'#5b6782',walker:'#e07a5f',idler:'#7b5ea7'}[p.role];
     dot(c,p.x,p.y,p.child?8:11,col); c.strokeStyle='#fff'; c.lineWidth=2; c.beginPath(); c.moveTo(p.x,p.y); c.lineTo(p.x+Math.cos(p.heading)*11,p.y+Math.sin(p.heading)*11); c.stroke(); c.lineWidth=1;
-    c.fillStyle='#1b2333'; c.font='11px system-ui'; c.fillText(p.name,p.x-20,p.y-15);
+    c.fillStyle='#1b2333'; c.font='16px system-ui'; c.fillText(p.name,p.x-30,p.y-16);
   });
   dot(c,TW.pl.x,TW.pl.y,12,'#1f6feb','#fff');
 }
