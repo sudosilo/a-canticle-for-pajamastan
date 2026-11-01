@@ -163,8 +163,8 @@ th{color:var(--soft);font-weight:600}
 
   <section id="s-relay">
     <div class="card"><h3>Booklegger relay</h3>
-      <p class="note">Paste the relay address Railway gave you, pick a room and a name, then connect. Open this page on a second phone with the same room to see messages pass between them.</p>
-      <div class="row"><label class="f">Relay address<input id="rlUrl" type="text" placeholder="booklegger-production.up.railway.app"></label></div>
+      <p class="note">The Booklegger address is already filled in. Tap Connect. Open this page on a second phone with the same room to see messages pass between them.</p>
+      <div class="row"><label class="f">Relay address<input id="rlUrl" type="text" value="booklegger-production.up.railway.app"></label></div>
       <div class="row"><label class="f">Room<input id="rlRoom" type="text" value="dry-well"></label><label class="f">Password<input id="rlPass" type="text" value=""></label><label class="f">Your name<input id="rlName" type="text" value="blue"></label></div>
       <div class="row"><button class="b" id="rlConnect">Connect</button><button class="b ghost" id="rlWalk">Send a move</button><button class="b ghost" id="rlChat">Send quick chat</button><button class="b ghost" id="rlBad">Send a bad message</button><button class="b ghost" id="rlLeave">Leave</button></div>
       <div id="rlState" class="note">Not connected.</div>
