@@ -8,7 +8,7 @@
   "boss": {
     "moveSpeed": 60,
     "phases": [ { "above": 0.66, "speedMult": 1.0, "attacks": ["swipe", "slam"] }, { "above": 0.33, "speedMult": 1.25, "attacks": ["swipe", "slam", "spit"] }, { "above": 0, "speedMult": 1.5, "attacks": ["slam", "spit", "frenzy"] } ],
-    "parts": { "leftClaw": { "health": 260, "armor": 14, "attacks": ["swipe"] }, "rightClaw": { "health": 260, "armor": 14, "attacks": ["slam"] }, "jaw": { "health": 340, "armor": 20, "attacks": ["spit"], "opensSoftSpot": true } },
+    "parts": { "leftClaw": { "health": 260, "armor": 6, "attacks": ["swipe"] }, "rightClaw": { "health": 260, "armor": 6, "attacks": ["slam"] }, "jaw": { "health": 340, "armor": 9, "attacks": ["spit"], "opensSoftSpot": true } },
     "coreHealth": 1600,
     "softSpotArmorCut": 0.6,
     "attackGap": 1.6,

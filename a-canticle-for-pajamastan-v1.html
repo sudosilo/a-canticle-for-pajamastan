@@ -972,7 +972,7 @@ function plSpawnGroup(r){
   list.forEach(function(e){ PL.beastW.enemies.push(tagEnemy(e,pick,r)); });
 }
 function plSpawnBoss(r){
-  var b=K.bestiary.createBoss(T.bestiary,{x:r.gx*CELL,y:r.gy*CELL-40}), m=depthMult()*tierScale().health*0.28;
+  var b=K.bestiary.createBoss(T.bestiary,{x:r.gx*CELL,y:r.gy*CELL-40}), m=depthMult()*tierScale().health*0.14;
   Object.keys(b.parts).forEach(function(k){ b.parts[k].maxHp=b.parts[k].hp=Math.round(b.parts[k].maxHp*m); });
   b.coreMax=b.core=Math.round(b.coreMax*m); var s=b.coreMax; Object.keys(b.parts).forEach(function(k){ s+=b.parts[k].maxHp; }); b.maxHp=b.hp=s;
   PL.beastW.enemies.push(tagEnemy(b,'boss',r));
