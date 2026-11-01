@@ -33,7 +33,9 @@
     openDoor: { owner: 'self', body: ['actor', 'room', 'door'] },
     roomCleared: { owner: 'leader', body: ['room'] },
     enemyState: { owner: 'leader', body: ['enemy', 'state', 'x', 'y', 'hp'] },
-    floorSeed: { owner: 'leader', body: ['floor', 'seed'] }
+    floorSeed: { owner: 'leader', body: ['floor', 'seed'] },
+    quickChat: { owner: 'self', body: ['actor', 'code'] },
+    symbolChat: { owner: 'self', body: ['actor', 'nums'] }
   };
 
   function make(type, slot, body) {
@@ -65,6 +67,8 @@
       if (!Array.isArray(b.targets) || b.targets.length > MAX_TARGETS) return 'bad targets';
       if (room.entities) for (var j = 0; j < b.targets.length; j++) if (!room.entities(b.targets[j])) return 'unknown target';
     }
+    if (msg.t === 'quickChat' && (!b.code || !isNum(b.code.c) || !isNum(b.code.i))) return 'bad chat code';
+    if (msg.t === 'symbolChat' && (!Array.isArray(b.nums) || b.nums.length > 64 || !b.nums.every(isNum))) return 'bad symbol';
     if ((msg.t === 'hitResult') && room.entities && !room.entities(b.target)) return 'unknown target';
     if ((msg.t === 'enemyState') && room.entities && !room.entities(b.enemy)) return 'unknown enemy';
     return null;

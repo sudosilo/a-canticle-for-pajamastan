@@ -161,6 +161,17 @@ th{color:var(--soft);font-weight:600}
     </div>
   </section>
 
+  <section id="s-relay">
+    <div class="card"><h3>Booklegger relay</h3>
+      <p class="note">Paste the relay address Railway gave you, pick a room and a name, then connect. Open this page on a second phone with the same room to see messages pass between them.</p>
+      <div class="row"><label class="f">Relay address<input id="rlUrl" type="text" placeholder="booklegger-production.up.railway.app"></label></div>
+      <div class="row"><label class="f">Room<input id="rlRoom" type="text" value="dry-well"></label><label class="f">Password<input id="rlPass" type="text" value=""></label><label class="f">Your name<input id="rlName" type="text" value="blue"></label></div>
+      <div class="row"><button class="b" id="rlConnect">Connect</button><button class="b ghost" id="rlWalk">Send a move</button><button class="b ghost" id="rlChat">Send quick chat</button><button class="b ghost" id="rlBad">Send a bad message</button><button class="b ghost" id="rlLeave">Leave</button></div>
+      <div id="rlState" class="note">Not connected.</div>
+      <div class="mono list" id="rlLog"></div>
+    </div>
+  </section>
+
   <section id="s-spells">
     <div class="card"><h3>Spell range</h3>
       <p class="note">Tap the field to aim. Green dots are allies for support spells. Dummies show health and status, and statuses tick down live.</p>
@@ -382,7 +393,8 @@ var SYS = [
   {id:'growth', name:'Growth', group:'Gear and growth'},
   {id:'companion', name:'Companion', group:'Gear and growth'},
   {id:'net', name:'Network sync', group:'Network'},
-  {id:'social', name:'Chat and cards', group:'Network'}
+  {id:'social', name:'Chat and cards', group:'Network'},
+  {id:'relay', name:'Booklegger relay', group:'Network'}
 ];
 var TUNING = ['combat','brain','loot','growth','floor','spells','status','comeback','bestiary','traps','economy','companion','modes','specials','gear','actions','social','camera'];
 var T = {};
@@ -1354,6 +1366,37 @@ function bootThree(){
 })();
 
 
+// ===== Booklegger relay client =====
+var RL={ws:null,slot:null,leader:null,lines:[],actor:null};
+function rlLog(s){ logTo('rlLog',RL.lines,s); }
+function rlState(){ $('rlState').textContent=RL.ws&&RL.ws.readyState===1?('Connected as slot '+RL.slot+(RL.slot===RL.leader?', room leader':'')+'.'):'Not connected.'; }
+function rlConnect(){
+  var raw=$('rlUrl').value.trim().replace(/^(https?|wss?):[/][/]/,'').replace(/[/]+$/,'');
+  if(!raw){ toast('Paste the relay address first'); return; }
+  try{ localStorage.setItem('canticle-v1-relay',raw); }catch(e){}
+  if(RL.ws) RL.ws.close();
+  RL.actor=$('rlName').value.trim()||'blue';
+  var ws=new WebSocket((/^localhost|^127[.]/.test(raw)?'ws://':'wss://')+raw); RL.ws=ws;
+  ws.onopen=function(){ ws.send(JSON.stringify({k:'join',room:$('rlRoom').value.trim(),password:$('rlPass').value,actor:RL.actor,name:RL.actor})); rlLog('connected, joining room'); };
+  ws.onmessage=function(ev){ var m; try{ m=JSON.parse(ev.data); }catch(e){ return; }
+    if(m.k==='joined'){ RL.slot=m.slot; RL.leader=m.leader; rlLog('joined as slot '+m.slot+', players: '+m.players.map(function(p){return p.name;}).join(', ')); }
+    else if(m.k==='peer'){ RL.leader=m.leader; rlLog((m.name||('slot '+m.slot))+' '+(m.event==='join'?'joined':'left')+'. Leader is slot '+m.leader); }
+    else if(m.k==='game'){ var g=m.msg; if(g.t==='walkTo') rlLog('slot '+g.s+' moved to '+g.b.x+', '+g.b.y); else if(g.t==='quickChat') rlLog('slot '+g.s+' says: '+K.social.quickText(T.social,g.b.code)); else rlLog('slot '+g.s+' sent '+g.t); }
+    else if(m.k==='error'){ rlLog('relay refused: '+m.reason); }
+    rlState(); };
+  ws.onclose=function(){ rlLog('disconnected'); RL.slot=null; rlState(); };
+  ws.onerror=function(){ rlLog('could not reach the relay'); };
+}
+function rlSend(t,b){ if(!RL.ws||RL.ws.readyState!==1||RL.slot===null){ toast('Connect first'); return; } RL.ws.send(JSON.stringify({k:'game',msg:{t:t,s:RL.slot,b:b}})); }
+function bootRelay(){
+  try{ var saved=localStorage.getItem('canticle-v1-relay'); if(saved) $('rlUrl').value=saved; }catch(e){}
+  $('rlConnect').onclick=rlConnect;
+  $('rlLeave').onclick=function(){ if(RL.ws) RL.ws.close(); };
+  $('rlWalk').onclick=function(){ var x=Math.round(Math.random()*400), y=Math.round(Math.random()*400); rlSend('walkTo',{actor:RL.actor,x:x,y:y}); rlLog('you moved to '+x+', '+y); };
+  $('rlChat').onclick=function(){ var code=K.social.quickCode(T.social,'Greetings',Math.floor(Math.random()*6),{}); rlSend('quickChat',{actor:RL.actor,code:code}); rlLog('you say: '+K.social.quickText(T.social,code)); };
+  $('rlBad').onclick=function(){ rlSend('walkTo',{actor:'someone-else',x:1,y:1}); rlLog('you tried to move another player'); };
+}
+
 // Boot
 Promise.all(TUNING.map(function(n){
   return fetch('tuning/a-canticle-for-pajamastan-v1-'+n+'.json').then(function(r){ return r.json(); }).then(function(j){ T[n]=j; });
@@ -1369,7 +1412,7 @@ Promise.all(TUNING.map(function(n){
   buildSliders('growth',$('t-growth'),function(){ drawGrowth(); });
   buildSliders('floor',$('t-floor'),buildFloor);
   $('cRun').onclick=runCombat;
-  resetBrain(); loadPreset(); checkNet(); runCombat(); bootTwo(); bootThree();
+  resetBrain(); loadPreset(); checkNet(); runCombat(); bootTwo(); bootThree(); bootRelay();
   show(load('tab')||'play');
   requestAnimationFrame(frame);
 }).catch(function(e){ document.querySelector('main').innerHTML='<div class="card">Tuning files failed to load: '+e+'</div>'; });
